@@ -69,12 +69,11 @@ public class WarehouseController {
     public ResponseEntity<List<Warehouse>> search(@RequestParam(required = false) String name,
                                                   @RequestParam(required = false) BigDecimal minCapacity) {
         List<Warehouse> found;
-        if(name != null && minCapacity == null)
-            found = warehouseService.findWarehousesByName(name);
-        else if(name == null && minCapacity != null)
-            found = warehouseService.findWarehousesByCapacity(minCapacity);
-        else
+        try{
+            found = warehouseService.search(name, minCapacity);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(found);
     }
 

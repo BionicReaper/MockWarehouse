@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/products")
+@CrossOrigin(origins = "*")
 public class ProductController {
 
     private final ProductService productService;
@@ -71,14 +72,11 @@ public class ProductController {
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice) {
         List<Product> products;
-        if(category != null && name == null && minPrice == null && maxPrice == null)
-            products = productService.findProductsByCategory(category);
-        else if(category == null && name != null && minPrice == null && maxPrice == null)
-            products = productService.findProductsByName(name);
-        else if(category == null && name == null && minPrice != null && maxPrice != null)
-            products = productService.findProductsByPriceBetween(minPrice, maxPrice);
-        else
+        try {
+            products = productService.search(category, name, minPrice, maxPrice);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(products);
     }
 

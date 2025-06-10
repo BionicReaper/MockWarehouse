@@ -18,5 +18,6 @@ public interface WarehouseService {
     //Business operations
     List<Warehouse> findWarehousesByName(String name);
     List<Warehouse> findWarehousesByCapacity(BigDecimal minCapacity);
+    List<Warehouse> search(String name, BigDecimal minCapacity);
 
 }

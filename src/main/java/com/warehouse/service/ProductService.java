@@ -20,5 +20,6 @@ public interface ProductService {
     public List<Product> findProductsByName(String name);
     public List<Product> findProductsByPriceBetween(BigDecimal low, BigDecimal high);
     public List<String> findAllCategories();
+    public List<Product> search(String category, String name, BigDecimal minPrice, BigDecimal maxPrice);
 
 }

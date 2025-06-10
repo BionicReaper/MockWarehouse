@@ -5,6 +5,7 @@ import com.warehouse.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,6 +67,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> findProductsByPriceBetween(BigDecimal low, BigDecimal high){
         return productRepository.findByPriceBetween(low, high);
+    }
+
+    @Override
+    public List<Product> search(String category, String name, BigDecimal minPrice, BigDecimal maxPrice){
+        if(category != null && name == null && minPrice == null && maxPrice == null)
+            return this.findProductsByCategory(category);
+        else if(category == null && name != null && minPrice == null && maxPrice == null)
+            return this.findProductsByName(name);
+        else if(category == null && name == null && minPrice != null && maxPrice != null)
+            return this.findProductsByPriceBetween(minPrice, maxPrice);
+        else
+            throw new RuntimeException("Bad Request");
     }
 
     @Override

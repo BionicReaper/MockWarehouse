@@ -58,4 +58,14 @@ public class WarehouseServiceImpl implements WarehouseService {
     public List<Warehouse> findWarehousesByCapacity(BigDecimal minCapacity) {
         return warehouseRepository.findByCapacityGreaterThan(minCapacity);
     }
+
+    @Override
+    public List<Warehouse> search(String name, BigDecimal minCapacity){
+        if(name != null && minCapacity == null)
+            return this.findWarehousesByName(name);
+        else if(name == null && minCapacity != null)
+            return this.findWarehousesByCapacity(minCapacity);
+        else
+            throw new RuntimeException("Bad Request");
+    }
 }
