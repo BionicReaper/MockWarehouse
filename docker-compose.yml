@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+    postgres:
+        image: postgres:15-alpine
+        container_name: postgres
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_DB: warehouse_db
+            POSTGRES_USER: warehouse_user
+            POSTGRES_PASSWORD: warehouse_pass
+        volumes:
+            - postgres_backup:/var/lib/postgresql/data
+
+volumes:
+    postgres_backup:
