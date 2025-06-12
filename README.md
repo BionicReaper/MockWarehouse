@@ -4,7 +4,7 @@ A simple warehouse management web API with basic inventory handling features.
 
 ## Prerequisites
 
-- Requires a running PostgreSQL installation. Specify connection information in  
+- Requires a running PostgreSQL installation. Configure connection information in  
   `src/main/resources/application.yml`.
 
 - Create the database schema using `src/main/postgres_init/dbinit.sql`.
@@ -24,7 +24,8 @@ The API will be available at `localhost:8080`.
 ---
 
 ### Endpoints with Usage Examples
-(All return values are in JSON)
+All return values are in JSON. Endpoints are also available at
+`localhost:8080/swagger-ui/index.html`.
 
 #### `/api/warehouses`
 
