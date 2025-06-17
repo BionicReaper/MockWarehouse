@@ -12,10 +12,11 @@ FROM eclipse-temurin:17-jre-ubi9-minimal
 WORKDIR /app
 
 RUN useradd -m appuser
-USER appuser
 
 COPY --from=build target/Warehouse-0.0.1-SNAPSHOT.jar ./app.jar
 RUN chown appuser:appuser ./app.jar
+
+USER appuser
 
 CMD ["java", "-jar", "app.jar"]
 
