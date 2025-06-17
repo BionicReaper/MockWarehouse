@@ -11,6 +11,22 @@ services:
             POSTGRES_PASSWORD: warehouse_pass
         volumes:
             - postgres_backup:/var/lib/postgresql/data
+        networks:
+            - warehouse-net
+
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: warehouse
+        ports:
+            - 8080:8080
+        networks:
+            - warehouse-net
+
+networks:
+    warehouse-net:
+        driver: bridge
 
 volumes:
     postgres_backup:
