@@ -19,6 +19,8 @@ services:
             context: .
             dockerfile: Dockerfile
         container_name: warehouse
+        depends_on:
+            - postgres
         ports:
             - 8080:8080
         networks:
