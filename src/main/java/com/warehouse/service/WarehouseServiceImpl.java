@@ -1,5 +1,9 @@
 package com.warehouse.service;
 
+import com.warehouse.dto.CreateWarehouseDTO;
+import com.warehouse.dto.ResponseWarehouseDTO;
+import com.warehouse.dto.UpdateWarehouseDTO;
+import com.warehouse.dto.WarehouseMapper;
 import com.warehouse.entity.Warehouse;
 import com.warehouse.repository.WarehouseRepository;
 import org.springframework.stereotype.Service;
@@ -14,15 +18,18 @@ import java.util.Optional;
  */
 @Service
 public class WarehouseServiceImpl implements WarehouseService {
+
     private final WarehouseRepository warehouseRepository;
+    private final WarehouseMapper mapper;
 
     /**
      * Constructs a new {@code WarehouseServiceImpl} with the given warehouse repository.
      *
      * @param warehouseRepository the repository used to access warehouse data
      */
-    public WarehouseServiceImpl(WarehouseRepository warehouseRepository) {
+    public WarehouseServiceImpl(WarehouseRepository warehouseRepository, WarehouseMapper warehouseMapper) {
         this.warehouseRepository = warehouseRepository;
+        this.mapper = warehouseMapper;
     }
 
     /**
@@ -31,8 +38,9 @@ public class WarehouseServiceImpl implements WarehouseService {
      * @return a list of all warehouses
      */
     @Override
-    public List<Warehouse> getAllWarehouses() {
-        return warehouseRepository.findAll();
+    public List<ResponseWarehouseDTO> getAllWarehouses() {
+        List<Warehouse> warehouses = warehouseRepository.findAll();
+        return mapper.toResponseDto(warehouses);
     }
 
     /**
@@ -42,40 +50,47 @@ public class WarehouseServiceImpl implements WarehouseService {
      * @return an {@link Optional} containing the warehouse if found, or empty if not found
      */
     @Override
-    public Optional<Warehouse> getWarehouseById(Long id) {
-        return warehouseRepository.findById(id);
+    public Optional<ResponseWarehouseDTO> getWarehouseById(Long id) {
+        Optional<Warehouse> warehouse = warehouseRepository.findById(id);
+        Optional<ResponseWarehouseDTO> responseWarehouseDTO;
+        responseWarehouseDTO = warehouse.map(mapper::toResponseDto);
+        return responseWarehouseDTO;
     }
 
     /**
      * Creates a new warehouse.
      *
-     * @param warehouse the warehouse to create
+     * @param warehouseDTO the warehouse to create
      * @return the created warehouse
      */
     @Override
-    public Warehouse createWarehouse(Warehouse warehouse) {
-        return warehouseRepository.save(warehouse);
+    public ResponseWarehouseDTO createWarehouse(CreateWarehouseDTO warehouseDTO) {
+        Warehouse warehouse = mapper.toEntity(warehouseDTO);
+        Warehouse saved = warehouseRepository.save(warehouse);
+        return mapper.toResponseDto(saved);
     }
 
     /**
      * Updates an existing warehouse identified by its ID.
      *
      * @param id        the ID of the warehouse to update
-     * @param warehouse the updated warehouse data
+     * @param warehouseDTO the updated warehouse data
      * @return the updated warehouse
      * @throws RuntimeException if the warehouse with the specified ID does not exist
      */
     @Override
-    public Warehouse updateWarehouse(Long id, Warehouse warehouse) {
-        return warehouseRepository.findById(id)
-                .map(existing -> {
-                    existing.setName(warehouse.getName());
-                    existing.setAddress(warehouse.getAddress());
-                    existing.setCapacity(warehouse.getCapacity());
-                    existing.setManagerName(warehouse.getManagerName());
-                    return warehouseRepository.save(existing);
-                })
+    public ResponseWarehouseDTO updateWarehouse(Long id, UpdateWarehouseDTO warehouseDTO) {
+        Warehouse existing = warehouseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Warehouse not found: " + id));
+        Warehouse warehouse = mapper.toEntity(warehouseDTO);
+
+        existing.setName(warehouse.getName());
+        existing.setAddress(warehouse.getAddress());
+        existing.setCapacity(warehouse.getCapacity());
+        existing.setManagerName(warehouse.getManagerName());
+
+        Warehouse saved = warehouseRepository.save(existing);
+        return mapper.toResponseDto(saved);
     }
 
     /**
@@ -95,8 +110,9 @@ public class WarehouseServiceImpl implements WarehouseService {
      * @return a list of warehouses matching the name criteria
      */
     @Override
-    public List<Warehouse> findWarehousesByName(String name) {
-        return warehouseRepository.findByNameContainingIgnoreCase(name);
+    public List<ResponseWarehouseDTO> findWarehousesByName(String name) {
+        List<Warehouse> warehouses = warehouseRepository.findByNameContainingIgnoreCase(name);
+        return mapper.toResponseDto(warehouses);
     }
 
     /**
@@ -106,8 +122,9 @@ public class WarehouseServiceImpl implements WarehouseService {
      * @return a list of warehouses with capacity greater than the specified amount
      */
     @Override
-    public List<Warehouse> findWarehousesByCapacity(BigDecimal minCapacity) {
-        return warehouseRepository.findByCapacityGreaterThan(minCapacity);
+    public List<ResponseWarehouseDTO> findWarehousesByCapacity(BigDecimal minCapacity) {
+        List<Warehouse> warehouses = warehouseRepository.findByCapacityGreaterThan(minCapacity);
+        return mapper.toResponseDto(warehouses);
     }
 
     /**
@@ -120,7 +137,7 @@ public class WarehouseServiceImpl implements WarehouseService {
      * @throws RuntimeException if both or none of the parameters are provided
      */
     @Override
-    public List<Warehouse> search(String name, BigDecimal minCapacity) {
+    public List<ResponseWarehouseDTO> search(String name, BigDecimal minCapacity) {
         if (name != null && minCapacity == null)
             return this.findWarehousesByName(name);
         else if (name == null && minCapacity != null)

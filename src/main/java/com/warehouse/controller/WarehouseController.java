@@ -1,5 +1,8 @@
 package com.warehouse.controller;
 
+import com.warehouse.dto.CreateWarehouseDTO;
+import com.warehouse.dto.ResponseWarehouseDTO;
+import com.warehouse.dto.UpdateWarehouseDTO;
 import com.warehouse.entity.Warehouse;
 import com.warehouse.service.WarehouseService;
 import org.springframework.http.HttpStatus;
@@ -34,8 +37,8 @@ public class WarehouseController {
      * @return a {@code ResponseEntity} containing the list of all warehouses and HTTP 200 OK
      */
     @GetMapping
-    public ResponseEntity<List<Warehouse>> getAllWarehouses() {
-        List<Warehouse> warehouses = warehouseService.getAllWarehouses();
+    public ResponseEntity<List<ResponseWarehouseDTO>> getAllWarehouses() {
+        List<ResponseWarehouseDTO> warehouses = warehouseService.getAllWarehouses();
         return ResponseEntity.ok(warehouses);
     }
 
@@ -47,7 +50,7 @@ public class WarehouseController {
      *         or HTTP 404 Not Found if not found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Warehouse> getWarehouseById(@PathVariable Long id) {
+    public ResponseEntity<ResponseWarehouseDTO> getWarehouseById(@PathVariable Long id) {
         return warehouseService.getWarehouseById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -56,12 +59,12 @@ public class WarehouseController {
     /**
      * Creates a new warehouse.
      *
-     * @param warehouse the warehouse object to create
+     * @param warehouseDTO the warehouse object to create
      * @return a {@code ResponseEntity} containing the created warehouse and HTTP 201 Created
      */
     @PostMapping
-    public ResponseEntity<Warehouse> createWarehouse(@RequestBody Warehouse warehouse) {
-        Warehouse created = warehouseService.createWarehouse(warehouse);
+    public ResponseEntity<ResponseWarehouseDTO> createWarehouse(@RequestBody CreateWarehouseDTO warehouseDTO) {
+        ResponseWarehouseDTO created = warehouseService.createWarehouse(warehouseDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
@@ -74,9 +77,11 @@ public class WarehouseController {
      *         or HTTP 404 Not Found if the warehouse does not exist
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Warehouse> updateWarehouse(@PathVariable Long id, @RequestBody Warehouse warehouse) {
+    public ResponseEntity<ResponseWarehouseDTO> updateWarehouse(
+            @PathVariable Long id,
+            @RequestBody UpdateWarehouseDTO warehouse) {
         try {
-            Warehouse updated = warehouseService.updateWarehouse(id, warehouse);
+            ResponseWarehouseDTO updated = warehouseService.updateWarehouse(id, warehouse);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -108,10 +113,10 @@ public class WarehouseController {
      *         or HTTP 400 Bad Request if parameters are invalid
      */
     @GetMapping("/search")
-    public ResponseEntity<List<Warehouse>> search(
+    public ResponseEntity<List<ResponseWarehouseDTO>> search(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) BigDecimal minCapacity) {
-        List<Warehouse> found;
+        List<ResponseWarehouseDTO> found;
         try {
             found = warehouseService.search(name, minCapacity);
         } catch (RuntimeException e) {
