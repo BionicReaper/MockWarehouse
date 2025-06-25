@@ -1,6 +1,8 @@
 package com.warehouse.controller;
 
-import com.warehouse.entity.Inventory;
+import com.warehouse.dto.inventory.CreateInventoryDTO;
+import com.warehouse.dto.inventory.ResponseInventoryDTO;
+import com.warehouse.dto.inventory.UpdateInventoryDTO;
 import com.warehouse.service.InventoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +34,8 @@ public class InventoryController {
      * @return a list of all inventory items with HTTP 200 OK
      */
     @GetMapping("/api/inventories")
-    public ResponseEntity<List<Inventory>> getAllInventories() {
-        List<Inventory> inventories = inventoryService.getAllInventories();
+    public ResponseEntity<List<ResponseInventoryDTO>> getAllInventories() {
+        List<ResponseInventoryDTO> inventories = inventoryService.getAllInventories();
         return ResponseEntity.ok(inventories);
     }
 
@@ -44,7 +46,7 @@ public class InventoryController {
      * @return the inventory item with HTTP 200 OK if found, or HTTP 404 Not Found
      */
     @GetMapping("/api/inventories/{id}")
-    public ResponseEntity<Inventory> getInventoryById(@PathVariable Long id) {
+    public ResponseEntity<ResponseInventoryDTO> getInventoryById(@PathVariable Long id) {
         return inventoryService.getInventoryById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -53,26 +55,28 @@ public class InventoryController {
     /**
      * Creates a new inventory item.
      *
-     * @param inventory the inventory item to be created
+     * @param inventoryDTO the inventory item to be created
      * @return the created inventory item with HTTP 201 Created
      */
     @PostMapping("/api/inventories")
-    public ResponseEntity<Inventory> createInventory(@RequestBody Inventory inventory) {
-        Inventory created = inventoryService.createInventory(inventory);
+    public ResponseEntity<ResponseInventoryDTO> createInventory(@RequestBody CreateInventoryDTO inventoryDTO) {
+        ResponseInventoryDTO created = inventoryService.createInventory(inventoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
      * Updates an existing inventory item by its ID.
      *
-     * @param id        the ID of the inventory item to update
-     * @param inventory the updated inventory data
+     * @param id           the ID of the inventory item to update
+     * @param inventoryDTO the updated inventory data
      * @return the updated inventory item with HTTP 200 OK, or HTTP 404 Not Found if not found
      */
     @PutMapping("/api/inventories/{id}")
-    public ResponseEntity<Inventory> updateInventory(@PathVariable Long id, @RequestBody Inventory inventory) {
+    public ResponseEntity<ResponseInventoryDTO> updateInventory(
+            @PathVariable Long id,
+            @RequestBody UpdateInventoryDTO inventoryDTO) {
         try {
-            Inventory updated = inventoryService.updateInventory(id, inventory);
+            ResponseInventoryDTO updated = inventoryService.updateInventory(id, inventoryDTO);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -86,7 +90,7 @@ public class InventoryController {
      * @return HTTP 204 No Content if deletion is successful, or HTTP 404 Not Found if not found
      */
     @DeleteMapping("/api/inventories/{id}")
-    public ResponseEntity<Inventory> deleteInventory(@PathVariable Long id) {
+    public ResponseEntity<ResponseInventoryDTO> deleteInventory(@PathVariable Long id) {
         try {
             inventoryService.deleteInventory(id);
             return ResponseEntity.noContent().build();
@@ -102,8 +106,8 @@ public class InventoryController {
      * @return a list of inventory items in the specified warehouse with HTTP 200 OK
      */
     @GetMapping("/api/warehouses/{warehouseId}/inventory")
-    public ResponseEntity<List<Inventory>> getInventoryByWarehouseId(@PathVariable Long warehouseId) {
-        List<Inventory> inventories = inventoryService.findWarehouseInventory(warehouseId);
+    public ResponseEntity<List<ResponseInventoryDTO>> getInventoryByWarehouseId(@PathVariable Long warehouseId) {
+        List<ResponseInventoryDTO> inventories = inventoryService.findWarehouseInventory(warehouseId);
         return ResponseEntity.ok(inventories);
     }
 
@@ -114,8 +118,8 @@ public class InventoryController {
      * @return a list of inventory entries containing the specified product with HTTP 200 OK
      */
     @GetMapping("api/inventories/product")
-    public ResponseEntity<List<Inventory>> getProductInInventory(@RequestParam(name = "id", required = true) Long productId) {
-        List<Inventory> inventories = inventoryService.findProductInInventory(productId);
+    public ResponseEntity<List<ResponseInventoryDTO>> getProductInInventory(@RequestParam(name = "id", required = true) Long productId) {
+        List<ResponseInventoryDTO> inventories = inventoryService.findProductInInventory(productId);
         return ResponseEntity.ok(inventories);
     }
 
@@ -127,10 +131,10 @@ public class InventoryController {
      * @return a list of inventory entries matching the warehouse and product with HTTP 200 OK
      */
     @GetMapping("api/warehouses/{warehouseId}/inventory/product")
-    public ResponseEntity<List<Inventory>> getProductInWarehouseInventory(
+    public ResponseEntity<List<ResponseInventoryDTO>> getProductInWarehouseInventory(
             @PathVariable Long warehouseId,
             @RequestParam(name = "id", required = true) Long productId) {
-        List<Inventory> inventories = inventoryService.findProductInWarehouseInventory(productId, warehouseId);
+        List<ResponseInventoryDTO> inventories = inventoryService.findProductInWarehouseInventory(productId, warehouseId);
         return ResponseEntity.ok(inventories);
     }
 
@@ -140,8 +144,8 @@ public class InventoryController {
      * @return a list of low stock inventory items with HTTP 200 OK
      */
     @GetMapping("api/inventories/lowstock")
-    public ResponseEntity<List<Inventory>> getLowStockInventory() {
-        List<Inventory> inventories = inventoryService.findLowStockInventory();
+    public ResponseEntity<List<ResponseInventoryDTO>> getLowStockInventory() {
+        List<ResponseInventoryDTO> inventories = inventoryService.findLowStockInventory();
         return ResponseEntity.ok(inventories);
     }
 }

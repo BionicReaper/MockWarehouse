@@ -1,11 +1,8 @@
 package com.warehouse.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Date;
 
 /**
  * Represents an inventory record for a specific product in a warehouse.
@@ -44,16 +41,15 @@ public class Inventory extends BaseEntity {
      * The warehouse where this inventory record is located.
      * This is a many-to-one relationship, as multiple inventory records can exist in one warehouse.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id", nullable = false)
-    @JsonBackReference
     private Warehouse warehouse;
 
     /**
      * The product associated with this inventory record.
      * This is a many-to-one relationship, as one product can be found in multiple inventory records.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 }

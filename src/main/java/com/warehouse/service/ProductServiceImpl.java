@@ -1,5 +1,9 @@
 package com.warehouse.service;
 
+import com.warehouse.dto.mapper.ProductMapper;
+import com.warehouse.dto.product.CreateProductDTO;
+import com.warehouse.dto.product.ResponseProductDTO;
+import com.warehouse.dto.product.UpdateProductDTO;
 import com.warehouse.entity.Product;
 import com.warehouse.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -16,14 +20,16 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductMapper mapper;
 
     /**
      * Constructs a new {@code ProductServiceImpl} with the given product repository.
      *
      * @param productRepository the repository used to access product data
      */
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.mapper = productMapper;
     }
 
     /**
@@ -32,8 +38,9 @@ public class ProductServiceImpl implements ProductService {
      * @return a list of all products
      */
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ResponseProductDTO> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return mapper.toResponseDto(products);
     }
 
     /**
@@ -43,41 +50,46 @@ public class ProductServiceImpl implements ProductService {
      * @return an {@link Optional} containing the product if found, or empty if not found
      */
     @Override
-    public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+    public Optional<ResponseProductDTO> getProductById(Long id) {
+        Optional<Product> product = productRepository.findById(id);
+        return product.map(mapper::toResponseDto);
     }
 
     /**
      * Creates a new product.
      *
-     * @param product the product to create
+     * @param productDTO the product to create
      * @return the created product
      */
     @Override
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public ResponseProductDTO createProduct(CreateProductDTO productDTO) {
+        Product product = mapper.toEntity(productDTO);
+        Product saved = productRepository.save(product);
+        return mapper.toResponseDto(saved);
     }
 
     /**
      * Updates an existing product identified by its ID.
      *
-     * @param id      the ID of the product to update
-     * @param product the product data to update
+     * @param id         the ID of the product to update
+     * @param productDTO the product data to update
      * @return the updated product
      * @throws RuntimeException if the product with the specified ID does not exist
      */
     @Override
-    public Product updateProduct(Long id, Product product) {
-        return productRepository.findById(id)
-                .map(existing -> {
-                    existing.setName(product.getName());
-                    existing.setDescription(product.getDescription());
-                    existing.setPrice(product.getPrice());
-                    existing.setCategory(product.getCategory());
-                    existing.setWeight(product.getWeight());
-                    return productRepository.save(existing);
-                })
-                .orElseThrow(() -> new RuntimeException("Warehouse not found: " + id));
+    public ResponseProductDTO updateProduct(Long id, UpdateProductDTO productDTO) {
+        Product existing = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inventory not found: " + id));
+        Product product = mapper.toEntity(productDTO);
+
+        existing.setName(product.getName());
+        existing.setDescription(product.getDescription());
+        existing.setPrice(product.getPrice());
+        existing.setCategory(product.getCategory());
+        existing.setWeight(product.getWeight());
+
+        Product saved = productRepository.save(existing);
+        return mapper.toResponseDto(saved);
     }
 
     /**
@@ -97,8 +109,9 @@ public class ProductServiceImpl implements ProductService {
      * @return a list of products in the specified category
      */
     @Override
-    public List<Product> findProductsByCategory(String category) {
-        return productRepository.findByCategory(category);
+    public List<ResponseProductDTO> findProductsByCategory(String category) {
+        List<Product> products = productRepository.findByCategory(category);
+        return mapper.toResponseDto(products);
     }
 
     /**
@@ -108,8 +121,9 @@ public class ProductServiceImpl implements ProductService {
      * @return a list of products whose names contain the specified string
      */
     @Override
-    public List<Product> findProductsByName(String name) {
-        return productRepository.findByNameContainingIgnoreCase(name);
+    public List<ResponseProductDTO> findProductsByName(String name) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
+        return mapper.toResponseDto(products);
     }
 
     /**
@@ -120,8 +134,9 @@ public class ProductServiceImpl implements ProductService {
      * @return a list of products within the price range
      */
     @Override
-    public List<Product> findProductsByPriceBetween(BigDecimal low, BigDecimal high) {
-        return productRepository.findByPriceBetween(low, high);
+    public List<ResponseProductDTO> findProductsByPriceBetween(BigDecimal low, BigDecimal high) {
+        List<Product> products = productRepository.findByPriceBetween(low, high);
+        return mapper.toResponseDto(products);
     }
 
     /**
@@ -136,7 +151,7 @@ public class ProductServiceImpl implements ProductService {
      * @throws RuntimeException if multiple or no criteria are provided (bad request)
      */
     @Override
-    public List<Product> search(String category, String name, BigDecimal minPrice, BigDecimal maxPrice) {
+    public List<ResponseProductDTO> search(String category, String name, BigDecimal minPrice, BigDecimal maxPrice) {
         if (category != null && name == null && minPrice == null && maxPrice == null)
             return this.findProductsByCategory(category);
         else if (category == null && name != null && minPrice == null && maxPrice == null)

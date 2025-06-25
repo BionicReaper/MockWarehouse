@@ -1,7 +1,6 @@
 package com.warehouse.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,7 +51,6 @@ public class Warehouse extends BaseEntity {
      * The list of inventory items stored in the warehouse.
      * This is a one-to-many relationship where the warehouse is the parent.
      */
-    @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "warehouse", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private List<Inventory> inventories;
 }

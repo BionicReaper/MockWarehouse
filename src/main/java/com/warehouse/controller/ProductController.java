@@ -1,6 +1,8 @@
 package com.warehouse.controller;
 
-import com.warehouse.entity.Product;
+import com.warehouse.dto.product.CreateProductDTO;
+import com.warehouse.dto.product.ResponseProductDTO;
+import com.warehouse.dto.product.UpdateProductDTO;
 import com.warehouse.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +36,8 @@ public class ProductController {
      * @return a list of all products
      */
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
+    public ResponseEntity<List<ResponseProductDTO>> getAllProducts() {
+        List<ResponseProductDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
@@ -46,35 +48,38 @@ public class ProductController {
      * @return the product if found, or 404 Not Found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ResponseProductDTO> getProductById(@PathVariable Long id) {
         return productService.getProductById(id)
-                .map(product -> ResponseEntity.ok(product))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     /**
      * Creates a new product.
      *
-     * @param product the product to be created
+     * @param productDTO the product to be created
      * @return the created product with 201 Created status
      */
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product created = productService.createProduct(product);
+    public ResponseEntity<ResponseProductDTO> createProduct(@RequestBody CreateProductDTO productDTO) {
+        ResponseProductDTO created = productService.createProduct(productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
      * Updates an existing product by ID.
      *
-     * @param id      the ID of the product to update
-     * @param product the updated product details
+     * @param id         the ID of the product to update
+     * @param productDTO the updated product details
      * @return the updated product or 404 Not Found if it doesn't exist
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<ResponseProductDTO> updateProduct(
+            @PathVariable Long id,
+            @RequestBody UpdateProductDTO productDTO
+    ) {
         try {
-            Product updated = productService.updateProduct(id, product);
+            ResponseProductDTO updated = productService.updateProduct(id, productDTO);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -88,7 +93,7 @@ public class ProductController {
      * @return 204 No Content if successful, or 404 Not Found
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Product> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<ResponseProductDTO> deleteProduct(@PathVariable Long id) {
         try {
             productService.deleteProduct(id);
             return ResponseEntity.noContent().build();
@@ -107,12 +112,12 @@ public class ProductController {
      * @return a list of products matching the search criteria
      */
     @GetMapping("/search")
-    public ResponseEntity<List<Product>> search(
+    public ResponseEntity<List<ResponseProductDTO>> search(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice) {
-        List<Product> products;
+        List<ResponseProductDTO> products;
         try {
             products = productService.search(category, name, minPrice, maxPrice);
         } catch (RuntimeException e) {

@@ -1,8 +1,8 @@
 package com.warehouse.service;
 
-import com.warehouse.dto.CreateWarehouseDTO;
-import com.warehouse.dto.ResponseWarehouseDTO;
-import com.warehouse.dto.UpdateWarehouseDTO;
+import com.warehouse.dto.warehouse.CreateWarehouseDTO;
+import com.warehouse.dto.warehouse.ResponseWarehouseDTO;
+import com.warehouse.dto.warehouse.UpdateWarehouseDTO;
 import com.warehouse.entity.Warehouse;
 
 import java.math.BigDecimal;

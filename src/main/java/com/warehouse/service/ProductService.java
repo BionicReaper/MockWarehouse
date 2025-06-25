@@ -1,5 +1,8 @@
 package com.warehouse.service;
 
+import com.warehouse.dto.product.CreateProductDTO;
+import com.warehouse.dto.product.ResponseProductDTO;
+import com.warehouse.dto.product.UpdateProductDTO;
 import com.warehouse.entity.Product;
 
 import java.math.BigDecimal;
@@ -17,7 +20,7 @@ public interface ProductService {
      *
      * @return a list of all products
      */
-    List<Product> getAllProducts();
+    List<ResponseProductDTO> getAllProducts();
 
     /**
      * Retrieves a product by its ID.
@@ -25,24 +28,24 @@ public interface ProductService {
      * @param id the product ID
      * @return an Optional containing the found product or empty if not found
      */
-    Optional<Product> getProductById(Long id);
+    Optional<ResponseProductDTO> getProductById(Long id);
 
     /**
      * Creates a new product.
      *
-     * @param product the product entity to create
+     * @param productDTO the product entity to create
      * @return the created product
      */
-    Product createProduct(Product product);
+    ResponseProductDTO createProduct(CreateProductDTO productDTO);
 
     /**
      * Updates an existing product by ID.
      *
-     * @param id      the ID of the product to update
-     * @param product the product data to update
+     * @param id         the ID of the product to update
+     * @param productDTO the product data to update
      * @return the updated product
      */
-    Product updateProduct(Long id, Product product);
+    ResponseProductDTO updateProduct(Long id, UpdateProductDTO productDTO);
 
     /**
      * Deletes a product by its ID.
@@ -57,7 +60,7 @@ public interface ProductService {
      * @param category the category name to filter products by
      * @return a list of products in the given category
      */
-    List<Product> findProductsByCategory(String category);
+    List<ResponseProductDTO> findProductsByCategory(String category);
 
     /**
      * Finds products whose names contain the specified string (case-insensitive).
@@ -65,7 +68,7 @@ public interface ProductService {
      * @param name the substring to search for within product names
      * @return a list of matching products
      */
-    List<Product> findProductsByName(String name);
+    List<ResponseProductDTO> findProductsByName(String name);
 
     /**
      * Finds products with prices within the specified range (inclusive).
@@ -74,7 +77,7 @@ public interface ProductService {
      * @param high the upper bound of the price range
      * @return a list of products priced between low and high
      */
-    List<Product> findProductsByPriceBetween(BigDecimal low, BigDecimal high);
+    List<ResponseProductDTO> findProductsByPriceBetween(BigDecimal low, BigDecimal high);
 
     /**
      * Retrieves all distinct product categories available.
@@ -92,5 +95,5 @@ public interface ProductService {
      * @param maxPrice the maximum price to filter by (nullable)
      * @return a list of products matching the given criteria
      */
-    List<Product> search(String category, String name, BigDecimal minPrice, BigDecimal maxPrice);
+    List<ResponseProductDTO> search(String category, String name, BigDecimal minPrice, BigDecimal maxPrice);
 }

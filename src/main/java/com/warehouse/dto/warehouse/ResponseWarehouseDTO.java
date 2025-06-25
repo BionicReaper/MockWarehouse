@@ -1,6 +1,6 @@
-package com.warehouse.dto;
+package com.warehouse.dto.warehouse;
 
-import com.warehouse.entity.Inventory;
+import com.warehouse.dto.inventory.MinimalInventoryDTO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,5 +11,5 @@ public record ResponseWarehouseDTO (
         String address,
         BigDecimal capacity,
         String managerName,
-        List<Inventory> inventories
+        List<MinimalInventoryDTO> inventories
 ) {}

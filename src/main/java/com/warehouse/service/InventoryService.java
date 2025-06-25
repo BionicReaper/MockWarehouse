@@ -1,8 +1,10 @@
 package com.warehouse.service;
 
+import com.warehouse.dto.inventory.CreateInventoryDTO;
+import com.warehouse.dto.inventory.ResponseInventoryDTO;
+import com.warehouse.dto.inventory.UpdateInventoryDTO;
+import com.warehouse.dto.reference.ReferenceDTO;
 import com.warehouse.entity.Inventory;
-import com.warehouse.entity.Product;
-import com.warehouse.entity.Warehouse;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,7 @@ public interface InventoryService {
      *
      * @return a list of all inventories
      */
-    List<Inventory> getAllInventories();
+    List<ResponseInventoryDTO> getAllInventories();
 
     /**
      * Retrieves an inventory record by its ID.
@@ -26,24 +28,24 @@ public interface InventoryService {
      * @param id the ID of the inventory
      * @return an {@link Optional} containing the inventory if found, or empty otherwise
      */
-    Optional<Inventory> getInventoryById(Long id);
+    Optional<ResponseInventoryDTO> getInventoryById(Long id);
 
     /**
      * Creates a new inventory record.
      *
-     * @param inventory the inventory to create
+     * @param inventoryDTO the inventory to create
      * @return the created inventory
      */
-    Inventory createInventory(Inventory inventory);
+    ResponseInventoryDTO createInventory(CreateInventoryDTO inventoryDTO);
 
     /**
      * Updates an existing inventory record identified by its ID.
      *
      * @param id        the ID of the inventory to update
-     * @param inventory the updated inventory data
+     * @param inventoryDTO the updated inventory data
      * @return the updated inventory
      */
-    Inventory updateInventory(Long id, Inventory inventory);
+    ResponseInventoryDTO updateInventory(Long id, UpdateInventoryDTO inventoryDTO);
 
     /**
      * Deletes an inventory record by its ID.
@@ -58,15 +60,15 @@ public interface InventoryService {
      * @param id the warehouse ID
      * @return a list of inventory items in the specified warehouse
      */
-    List<Inventory> findWarehouseInventory(Long id);
+    List<ResponseInventoryDTO> findWarehouseInventory(Long id);
 
     /**
      * Finds all inventory records associated with a specific warehouse.
      *
-     * @param warehouse the warehouse entity
+     * @param warehouseDTO the warehouse entity
      * @return a list of inventory items in the specified warehouse
      */
-    List<Inventory> findWarehouseInventory(Warehouse warehouse);
+    List<ResponseInventoryDTO> findWarehouseInventory(ReferenceDTO warehouseDTO);
 
     /**
      * Finds all inventory records for a specific product by its ID.
@@ -74,15 +76,15 @@ public interface InventoryService {
      * @param id the product ID
      * @return a list of inventory items for the specified product
      */
-    List<Inventory> findProductInInventory(Long id);
+    List<ResponseInventoryDTO> findProductInInventory(Long id);
 
     /**
      * Finds all inventory records for a specific product.
      *
-     * @param product the product entity
+     * @param productDTO the product entity
      * @return a list of inventory items for the specified product
      */
-    List<Inventory> findProductInInventory(Product product);
+    List<ResponseInventoryDTO> findProductInInventory(ReferenceDTO productDTO);
 
     /**
      * Finds inventory records for a specific product in a specific warehouse by their IDs.
@@ -91,40 +93,40 @@ public interface InventoryService {
      * @param warehouseId the warehouse ID
      * @return a list of matching inventory items
      */
-    List<Inventory> findProductInWarehouseInventory(Long productId, Long warehouseId);
+    List<ResponseInventoryDTO> findProductInWarehouseInventory(Long productId, Long warehouseId);
 
     /**
      * Finds inventory records for a specific product entity in a specific warehouse by warehouse ID.
      *
-     * @param product     the product entity
-     * @param warehouseId the warehouse ID
+     * @param productDTO     the product entity
+     * @param warehouseId    the warehouse ID
      * @return a list of matching inventory items
      */
-    List<Inventory> findProductInWarehouseInventory(Product product, Long warehouseId);
+    List<ResponseInventoryDTO> findProductInWarehouseInventory(ReferenceDTO productDTO, Long warehouseId);
 
     /**
      * Finds inventory records for a specific product by product ID in a specific warehouse entity.
      *
-     * @param productId the product ID
-     * @param warehouse the warehouse entity
+     * @param productId    the product ID
+     * @param warehouseDTO the warehouse entity
      * @return a list of matching inventory items
      */
-    List<Inventory> findProductInWarehouseInventory(Long productId, Warehouse warehouse);
+    List<ResponseInventoryDTO> findProductInWarehouseInventory(Long productId, ReferenceDTO warehouseDTO);
 
     /**
      * Finds inventory records for a specific product entity in a specific warehouse entity.
      *
-     * @param product   the product entity
-     * @param warehouse the warehouse entity
+     * @param productDTO   the product entity
+     * @param warehouseDTO the warehouse entity
      * @return a list of matching inventory items
      */
-    List<Inventory> findProductInWarehouseInventory(Product product, Warehouse warehouse);
+    List<ResponseInventoryDTO> findProductInWarehouseInventory(ReferenceDTO productDTO, ReferenceDTO warehouseDTO);
 
     /**
      * Finds all inventory items with quantity less than their minimum stock threshold.
      *
      * @return a list of low stock inventory items
      */
-    List<Inventory> findLowStockInventory();
+    List<ResponseInventoryDTO> findLowStockInventory();
 
 }
